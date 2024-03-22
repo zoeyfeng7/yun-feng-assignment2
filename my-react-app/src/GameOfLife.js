@@ -28,11 +28,13 @@ const GameOfLife = () => {
   const [running, setRunning] = useState(false);
   const runningRef = useRef(running);
   runningRef.current = running;
+  const [liveCellsCount, setLiveCellsCount] = useState(0); // 新的状态变量
   const [error, setError] = useState(""); // 状态变量用于存储错误消息
 
   const simulateOneStep = () => {
     setGrid((g) => {
-      return produce(g, (gridCopy) => {
+      let liveCount = 0; // 初始化当前活细胞数
+      const newGrid = produce(g, (gridCopy) => {
         for (let i = 0; i < gridSize.rows; i++) {
           for (let j = 0; j < gridSize.cols; j++) {
             let neighbors = 0;
@@ -53,10 +55,17 @@ const GameOfLife = () => {
               gridCopy[i][j] = 0;
             } else if (g[i][j] === 0 && neighbors === 3) {
               gridCopy[i][j] = 1;
+              liveCount++; // 细胞从死变活，增加活细胞计数
+            } else if (g[i][j] === 1) {
+              if (neighbors === 2 || neighbors === 3) {
+                liveCount++; // 细胞保持活着，增加活细胞计数
+              }
             }
           }
         }
       });
+      setLiveCellsCount(liveCount); // 在这里更新活细胞数
+      return newGrid; // 返回新的网格状态
     });
   };
 
@@ -144,7 +153,7 @@ const GameOfLife = () => {
           onClick={() => {
             setGrid(
               generateEmptyGrid(gridSize.rows, gridSize.cols).map((row) =>
-                row.map(() => (Math.random() > 0.7 ? 1 : 0))
+                row.map(() => (Math.random() <= 0.05 ? 1 : 0))
               )
             );
           }}
@@ -160,6 +169,7 @@ const GameOfLife = () => {
         </button>
         <button onClick={simulateOneStep}>Next Step</button>
       </div>
+      <div style={{ marginTop: "20px" }}>Live Cells: {liveCellsCount}</div>
     </>
   );
 };
