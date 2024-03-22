@@ -20,6 +20,40 @@ const generateEmptyGrid = (rows, cols) => {
   return grid;
 };
 
+const generateClusteredGrid = (
+  rows,
+  cols,
+  clusterCount = 5,
+  clusterRadius = 3
+) => {
+  const grid = generateEmptyGrid(rows, cols);
+  const centers = [];
+  for (let i = 0; i < clusterCount; i++) {
+    const center = {
+      x: Math.floor(Math.random() * rows),
+      y: Math.floor(Math.random() * cols),
+    };
+    centers.push(center);
+  }
+
+  for (const center of centers) {
+    for (let i = -clusterRadius; i <= clusterRadius; i++) {
+      for (let j = -clusterRadius; j <= clusterRadius; j++) {
+        const x = center.x + i;
+        const y = center.y + j;
+        if (x >= 0 && x < rows && y >= 0 && y < cols) {
+          if (Math.random() <= 0.5) {
+            // Adjust this probability to control density
+            grid[x][y] = 1;
+          }
+        }
+      }
+    }
+  }
+
+  return grid;
+};
+
 const GameOfLife = () => {
   const [gridSize, setGridSize] = useState({ rows: 20, cols: 20 });
   const [grid, setGrid] = useState(() =>
@@ -28,12 +62,12 @@ const GameOfLife = () => {
   const [running, setRunning] = useState(false);
   const runningRef = useRef(running);
   runningRef.current = running;
-  const [liveCellsCount, setLiveCellsCount] = useState(0); // 新的状态变量
-  const [error, setError] = useState(""); // 状态变量用于存储错误消息
+  const [liveCellsCount, setLiveCellsCount] = useState(0); // New state variable
+  const [error, setError] = useState(""); // State variable for storing error messages
 
   const simulateOneStep = () => {
     setGrid((g) => {
-      let liveCount = 0; // 初始化当前活细胞数
+      let liveCount = 0; // Initialize current live cell count
       const newGrid = produce(g, (gridCopy) => {
         for (let i = 0; i < gridSize.rows; i++) {
           for (let j = 0; j < gridSize.cols; j++) {
@@ -55,17 +89,17 @@ const GameOfLife = () => {
               gridCopy[i][j] = 0;
             } else if (g[i][j] === 0 && neighbors === 3) {
               gridCopy[i][j] = 1;
-              liveCount++; // 细胞从死变活，增加活细胞计数
+              liveCount++; // Cell transitions from dead to alive, increment live cell count
             } else if (g[i][j] === 1) {
               if (neighbors === 2 || neighbors === 3) {
-                liveCount++; // 细胞保持活着，增加活细胞计数
+                liveCount++; // Cell stays alive, increment live cell count
               }
             }
           }
         }
       });
-      setLiveCellsCount(liveCount); // 在这里更新活细胞数
-      return newGrid; // 返回新的网格状态
+      setLiveCellsCount(liveCount); // Update live cell count here
+      return newGrid; // Return new grid state
     });
   };
 
@@ -147,7 +181,7 @@ const GameOfLife = () => {
             }
           }}
         >
-          {running ? "Stop" : "Start"}
+          {running ? "Stop" : "AutoPlay"}
         </button>
         <button
           onClick={() => {
@@ -159,6 +193,13 @@ const GameOfLife = () => {
           }}
         >
           Randomize
+        </button>
+        <button
+          onClick={() => {
+            setGrid(generateClusteredGrid(gridSize.rows, gridSize.cols));
+          }}
+        >
+          Clusterize
         </button>
         <button
           onClick={() =>
