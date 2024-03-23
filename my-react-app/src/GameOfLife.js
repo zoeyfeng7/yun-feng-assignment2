@@ -1,5 +1,9 @@
 import React, { useState, useCallback, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import produce from "immer";
+import { useGameState } from "./GameStateContext";
+import "./GameOfLife.css";
+import NavBar from "./NavBar";
 
 const operations = [
   [0, 1],
@@ -64,6 +68,8 @@ const GameOfLife = () => {
   runningRef.current = running;
   const [liveCellsCount, setLiveCellsCount] = useState(0); // New state variable
   const [error, setError] = useState(""); // State variable for storing error messages
+  const navigate = useNavigate();
+  const { setGrid: setGlobalGrid, setIsRunning } = useGameState();
 
   const simulateOneStep = () => {
     setGrid((g) => {
@@ -99,6 +105,7 @@ const GameOfLife = () => {
         }
       });
       setLiveCellsCount(liveCount); // Update live cell count here
+      setGlobalGrid(newGrid);
       return newGrid; // Return new grid state
     });
   };
@@ -113,7 +120,18 @@ const GameOfLife = () => {
 
   return (
     <>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+          marginBottom: "20px",
+        }}
+      >
+        <NavBar />
+      </div>
       <form
+        className="form"
         onSubmit={(e) => {
           e.preventDefault();
           const newRows = parseInt(e.target.rows.value);
@@ -121,55 +139,62 @@ const GameOfLife = () => {
           if (newRows >= 3 && newRows <= 40 && newCols >= 3 && newCols <= 40) {
             setGridSize({ rows: newRows, cols: newCols });
             setGrid(generateEmptyGrid(newRows, newCols));
-            setError(""); // 如果输入有效，则清除错误消息
+            setError("");
           } else {
-            // 设置错误消息，但不更新网格大小
             setError("Rows and cols must be between 3 and 40.");
           }
         }}
       >
         <input
+          className="input"
           name="rows"
           type="number"
           defaultValue={gridSize.rows}
           placeholder="Height"
         />
         <input
+          className="input"
           name="cols"
           type="number"
           defaultValue={gridSize.cols}
           placeholder="Width"
         />
-        <button type="submit">Update Size</button>
+        <button className="button" type="submit">
+          Update Size
+        </button>
       </form>
-      {error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}
+      {error && <div className="errorMessage">{error}</div>}
       <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${gridSize.cols}, 20px)`,
-        }}
+        style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
       >
-        {grid.map((rows, rowIndex) =>
-          rows.map((col, colIndex) => (
-            <div
-              key={`${rowIndex}-${colIndex}`}
-              onClick={() => {
-                const newGrid = produce(grid, (gridCopy) => {
-                  gridCopy[rowIndex][colIndex] = grid[rowIndex][colIndex]
-                    ? 0
-                    : 1; // Toggle cell state
-                });
-                setGrid(newGrid);
-              }}
-              style={{
-                width: 20,
-                height: 20,
-                backgroundColor: grid[rowIndex][colIndex] ? "black" : "white",
-                border: "solid 1px gray",
-              }}
-            />
-          ))
-        )}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: `repeat(${gridSize.cols}, 20px)`,
+          }}
+        >
+          {grid.map((rows, rowIndex) =>
+            rows.map((col, colIndex) => (
+              <div
+                key={`${rowIndex}-${colIndex}`}
+                onClick={() => {
+                  const newGrid = produce(grid, (gridCopy) => {
+                    gridCopy[rowIndex][colIndex] = grid[rowIndex][colIndex]
+                      ? 0
+                      : 1; // Toggle cell state
+                  });
+                  setGrid(newGrid);
+                }}
+                style={{
+                  width: 20,
+                  height: 20,
+                  backgroundColor: grid[rowIndex][colIndex] ? "black" : "white",
+                  border: "solid 1px gray",
+                }}
+              />
+            ))
+          )}
+        </div>
       </div>
       <div className="controls">
         <button
@@ -209,8 +234,17 @@ const GameOfLife = () => {
           Clear
         </button>
         <button onClick={simulateOneStep}>Next Step</button>
+        <button
+          onClick={() => {
+            navigate("/heatmap");
+          }}
+        >
+          Heatmap
+        </button>
       </div>
-      <div style={{ marginTop: "20px" }}>Live Cells: {liveCellsCount}</div>
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
+        Live Cells: {liveCellsCount}
+      </div>
     </>
   );
 };

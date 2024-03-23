@@ -1,15 +1,21 @@
 import React from "react";
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./HomePage";
 import GameOfLife from "./GameOfLife";
+import CreditsPage from "./CreditsPage";
+import { GameStateProvider } from "./GameStateContext";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Conway's Game of Life</h1>
-        <GameOfLife />
-      </header>
-    </div>
+    <GameStateProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/gameoflife" element={<GameOfLife />} />
+          <Route path="/credits" element={<CreditsPage />} />
+        </Routes>
+      </Router>
+    </GameStateProvider>
   );
 }
 

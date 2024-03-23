@@ -1,0 +1,60 @@
+.form {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.input {
+  margin: 0 10px;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.button {
+  background-color: #4caf50; /* Green */
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #45a049;
+}
+
+.gridContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* 确保垂直居中 */
+  height: 100vh; /* 使用视窗高度，这样可以在垂直方向上提供足够的空间进行居中 */
+}
+
+.cell {
+  width: 20px;
+  height: 20px;
+  border: solid 1px gray;
+  cursor: pointer;
+}
+
+.alive {
+  background-color: black;
+}
+
+.dead {
+  background-color: white;
+}
+
+.errorMessage {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+}
