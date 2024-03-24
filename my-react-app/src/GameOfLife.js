@@ -1,9 +1,13 @@
 import React, { useState, useCallback, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import produce from "immer";
 import { useGameState } from "./GameStateContext";
 import "./GameOfLife.css";
 import NavBar from "./NavBar";
+import GridSizeForm from "./GridSizeForm";
+import GridDisplay from "./GridDisplay";
+import ControlPanel from "./ControlPanel";
+import LiveCellsDisplay from "./LiveCellsDisplay";
 
 const operations = [
   [0, 1],
@@ -130,121 +134,32 @@ const GameOfLife = () => {
       >
         <NavBar />
       </div>
-      <form
-        className="form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const newRows = parseInt(e.target.rows.value);
-          const newCols = parseInt(e.target.cols.value);
-          if (newRows >= 3 && newRows <= 40 && newCols >= 3 && newCols <= 40) {
-            setGridSize({ rows: newRows, cols: newCols });
-            setGrid(generateEmptyGrid(newRows, newCols));
-            setError("");
-          } else {
-            setError("Rows and cols must be between 3 and 40.");
-          }
-        }}
-      >
-        <input
-          className="input"
-          name="rows"
-          type="number"
-          defaultValue={gridSize.rows}
-          placeholder="Height"
-        />
-        <input
-          className="input"
-          name="cols"
-          type="number"
-          defaultValue={gridSize.cols}
-          placeholder="Width"
-        />
-        <button className="button" type="submit">
-          Update Size
-        </button>
-      </form>
+      <GridSizeForm
+        gridSize={gridSize}
+        setGridSize={setGridSize}
+        setError={setError}
+        generateEmptyGrid={generateEmptyGrid}
+        setGrid={setGrid}
+      />
       {error && <div className="errorMessage">{error}</div>}
       <div
         style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
       >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: `repeat(${gridSize.cols}, 20px)`,
-          }}
-        >
-          {grid.map((rows, rowIndex) =>
-            rows.map((col, colIndex) => (
-              <div
-                key={`${rowIndex}-${colIndex}`}
-                onClick={() => {
-                  const newGrid = produce(grid, (gridCopy) => {
-                    gridCopy[rowIndex][colIndex] = grid[rowIndex][colIndex]
-                      ? 0
-                      : 1; // Toggle cell state
-                  });
-                  setGrid(newGrid);
-                }}
-                style={{
-                  width: 20,
-                  height: 20,
-                  backgroundColor: grid[rowIndex][colIndex] ? "black" : "white",
-                  border: "solid 1px gray",
-                }}
-              />
-            ))
-          )}
-        </div>
+        <GridDisplay grid={grid} setGrid={setGrid} gridSize={gridSize} />
       </div>
-      <div className="controls">
-        <button
-          onClick={() => {
-            setRunning(!running);
-            if (!running) {
-              runningRef.current = true;
-              runSimulation();
-            }
-          }}
-        >
-          {running ? "Stop" : "AutoPlay"}
-        </button>
-        <button
-          onClick={() => {
-            setGrid(
-              generateEmptyGrid(gridSize.rows, gridSize.cols).map((row) =>
-                row.map(() => (Math.random() <= 0.05 ? 1 : 0))
-              )
-            );
-          }}
-        >
-          Randomize
-        </button>
-        <button
-          onClick={() => {
-            setGrid(generateClusteredGrid(gridSize.rows, gridSize.cols));
-          }}
-        >
-          Clusterize
-        </button>
-        <button
-          onClick={() =>
-            setGrid(generateEmptyGrid(gridSize.rows, gridSize.cols))
-          }
-        >
-          Clear
-        </button>
-        <button onClick={simulateOneStep}>Next Step</button>
-        <button
-          onClick={() => {
-            navigate("/heatmap");
-          }}
-        >
-          Heatmap
-        </button>
-      </div>
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
-        Live Cells: {liveCellsCount}
-      </div>
+      <ControlPanel
+        running={running}
+        setRunning={setRunning}
+        runningRef={runningRef}
+        runSimulation={runSimulation}
+        setGrid={setGrid}
+        generateEmptyGrid={generateEmptyGrid}
+        gridSize={gridSize}
+        generateClusteredGrid={generateClusteredGrid}
+        simulateOneStep={simulateOneStep}
+        navigate={navigate}
+      />
+      <LiveCellsDisplay liveCellsCount={liveCellsCount} />
     </>
   );
 };
