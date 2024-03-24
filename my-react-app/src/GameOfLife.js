@@ -32,27 +32,46 @@ const generateClusteredGrid = (
   rows,
   cols,
   clusterCount = 5,
-  clusterRadius = 3
+  clusterRadius = 3,
+  targetDensity = 0.075 // Targeting the middle of 5-10% for cell alive density
 ) => {
   const grid = generateEmptyGrid(rows, cols);
+  const totalCells = rows * cols;
+  const targetAliveCells = Math.floor(totalCells * targetDensity);
+  let aliveCells = 0;
+
   const centers = [];
-  for (let i = 0; i < clusterCount; i++) {
+  for (let i = 0; i < clusterCount && aliveCells < targetAliveCells; i++) {
     const center = {
       x: Math.floor(Math.random() * rows),
       y: Math.floor(Math.random() * cols),
     };
     centers.push(center);
-  }
 
-  for (const center of centers) {
-    for (let i = -clusterRadius; i <= clusterRadius; i++) {
-      for (let j = -clusterRadius; j <= clusterRadius; j++) {
+    for (
+      let i = -clusterRadius;
+      i <= clusterRadius && aliveCells < targetAliveCells;
+      i++
+    ) {
+      for (
+        let j = -clusterRadius;
+        j <= clusterRadius && aliveCells < targetAliveCells;
+        j++
+      ) {
         const x = center.x + i;
         const y = center.y + j;
         if (x >= 0 && x < rows && y >= 0 && y < cols) {
-          if (Math.random() <= 0.5) {
-            // Adjust this probability to control density
-            grid[x][y] = 1;
+          // Adjust this probability dynamically to control density
+          // Lowering the probability as we approach the target density
+          const remainingCells = targetAliveCells - aliveCells;
+          const remainingDensity =
+            remainingCells / (totalCells - (i * rows + j));
+          if (Math.random() <= Math.min(remainingDensity * 2, 1)) {
+            if (grid[x][y] === 0) {
+              // Check to ensure we're not overwriting an already alive cell
+              grid[x][y] = 1;
+              aliveCells++;
+            }
           }
         }
       }
