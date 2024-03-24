@@ -27,6 +27,7 @@ const ControlPanel = ({
       >
         {running ? "Stop" : "AutoPlay"}
       </button>
+      <button onClick={simulateOneStep}>Next Frame</button>
       <button
         onClick={() => {
           setGrid(
@@ -48,9 +49,8 @@ const ControlPanel = ({
       <button
         onClick={() => setGrid(generateEmptyGrid(gridSize.rows, gridSize.cols))}
       >
-        Clear
+        Reset
       </button>
-      <button onClick={simulateOneStep}>Next Step</button>
       <button
         onClick={() => {
           navigate("/heatmap");
