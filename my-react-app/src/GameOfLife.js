@@ -71,13 +71,11 @@ const generateLifeFramesGrid = (rows, cols) => {
 };
 
 const tryMoveCellToClosestSpot = (grid, x, y) => {
-  // 示例：尝试向上移动细胞
   if (x > 0 && grid[x - 1][y] === 0) {
-    grid[x - 1][y] = 1; // 将细胞移动到上方的空位
-    grid[x][y] = 0; // 当前位置置为空
+    grid[x - 1][y] = 1;
+    grid[x][y] = 0;
     return true;
   }
-  // 类似地，你可以增加其他方向的检查逻辑
   return false;
 };
 
@@ -120,16 +118,13 @@ const GameOfLife = () => {
             });
 
             if (longerLastingCellsActive && (neighbors < 2 || neighbors > 3)) {
-              // 在这里尝试将细胞移动到最近的空位，而不是直接设置为死亡
-              // 这需要一个额外的函数来尝试找到空位并移动细胞
               const moved = tryMoveCellToClosestSpot(gridCopy, i, j);
               if (!moved) {
-                gridCopy[i][j] = 0; // 如果没有成功移动，细胞死亡
+                gridCopy[i][j] = 0;
               } else {
-                liveCount++; // 如果移动成功，认为细胞“存活”
+                liveCount++;
               }
             } else {
-              // 原有的逻辑
               if (neighbors < 2 || neighbors > 3) {
                 gridCopy[i][j] = 0;
               } else if (g[i][j] === 0 && neighbors === 3) {
