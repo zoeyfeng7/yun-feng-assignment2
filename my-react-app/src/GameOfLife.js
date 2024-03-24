@@ -90,12 +90,32 @@ const generateLifeFramesGrid = (rows, cols) => {
 };
 
 const tryMoveCellToClosestSpot = (grid, x, y) => {
-  if (x > 0 && grid[x - 1][y] === 0) {
-    grid[x - 1][y] = 1;
-    grid[x][y] = 0;
-    return true;
+  // Define possible directions for movement: right, left, down, up
+  const directions = [
+    [0, 1], // Right
+    [0, -1], // Left
+    [1, 0], // Down
+    [-1, 0], // Up
+  ];
+
+  // Iterate through each possible direction
+  for (let [dx, dy] of directions) {
+    const newX = x + dx;
+    const newY = y + dy;
+
+    // Check if the new position is within the grid boundaries
+    if (newX >= 0 && newX < grid.length && newY >= 0 && newY < grid[0].length) {
+      // Check if the new position is empty (no cell alive there)
+      if (grid[newX][newY].alive === 0) {
+        // Move the cell to the new position: mark it as alive and reset its lifespan
+        grid[newX][newY] = { alive: 1, lifespan: 2 }; // Set the new cell as alive and reset lifespan
+        grid[x][y] = { alive: 0, lifespan: 2 }; // Mark the original cell as dead
+        return true; // Indicate that the cell was successfully moved
+      }
+    }
   }
-  return false;
+
+  return false; // Indicate that no empty spot was found for movement
 };
 
 const GameOfLife = () => {
