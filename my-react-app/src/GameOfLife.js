@@ -62,6 +62,25 @@ const generateClusteredGrid = (
   return grid;
 };
 
+const generateLifeFramesGrid = (rows, cols) => {
+  const grid = [];
+  for (let i = 0; i < rows; i++) {
+    grid.push(Array.from(Array(cols), () => 0)); // Initialize all cells with 0 life frames
+  }
+  return grid;
+};
+
+const tryMoveCellToClosestSpot = (grid, x, y) => {
+  // 示例：尝试向上移动细胞
+  if (x > 0 && grid[x - 1][y] === 0) {
+    grid[x - 1][y] = 1; // 将细胞移动到上方的空位
+    grid[x][y] = 0; // 当前位置置为空
+    return true;
+  }
+  // 类似地，你可以增加其他方向的检查逻辑
+  return false;
+};
+
 const GameOfLife = () => {
   const [gridSize, setGridSize] = useState({ rows: 20, cols: 20 });
   const [grid, setGrid] = useState(() =>
@@ -73,7 +92,12 @@ const GameOfLife = () => {
   const [liveCellsCount, setLiveCellsCount] = useState(0); // New state variable
   const [error, setError] = useState(""); // State variable for storing error messages
   const navigate = useNavigate();
-  const { setGrid: setGlobalGrid, setIsRunning } = useGameState();
+  const { setGrid: setGlobalGrid } = useGameState();
+  const [longerLastingCellsActive, setLongerLastingCellsActive] =
+    useState(false);
+  const [lifeFramesGrid, setLifeFramesGrid] = useState(() =>
+    generateLifeFramesGrid(gridSize.rows, gridSize.cols)
+  );
 
   const simulateOneStep = () => {
     setGrid((g) => {
@@ -95,22 +119,35 @@ const GameOfLife = () => {
               }
             });
 
-            if (neighbors < 2 || neighbors > 3) {
-              gridCopy[i][j] = 0;
-            } else if (g[i][j] === 0 && neighbors === 3) {
-              gridCopy[i][j] = 1;
-              liveCount++; // Cell transitions from dead to alive, increment live cell count
-            } else if (g[i][j] === 1) {
-              if (neighbors === 2 || neighbors === 3) {
-                liveCount++; // Cell stays alive, increment live cell count
+            if (longerLastingCellsActive && (neighbors < 2 || neighbors > 3)) {
+              // 在这里尝试将细胞移动到最近的空位，而不是直接设置为死亡
+              // 这需要一个额外的函数来尝试找到空位并移动细胞
+              const moved = tryMoveCellToClosestSpot(gridCopy, i, j);
+              if (!moved) {
+                gridCopy[i][j] = 0; // 如果没有成功移动，细胞死亡
+              } else {
+                liveCount++; // 如果移动成功，认为细胞“存活”
+              }
+            } else {
+              // 原有的逻辑
+              if (neighbors < 2 || neighbors > 3) {
+                gridCopy[i][j] = 0;
+              } else if (g[i][j] === 0 && neighbors === 3) {
+                gridCopy[i][j] = 1;
+                liveCount++;
+              } else if (
+                g[i][j] === 1 &&
+                (neighbors === 2 || neighbors === 3)
+              ) {
+                liveCount++;
               }
             }
           }
         }
       });
-      setLiveCellsCount(liveCount); // Update live cell count here
+      setLiveCellsCount(liveCount);
       setGlobalGrid(newGrid);
-      return newGrid; // Return new grid state
+      return newGrid;
     });
   };
 
@@ -158,6 +195,8 @@ const GameOfLife = () => {
         generateClusteredGrid={generateClusteredGrid}
         simulateOneStep={simulateOneStep}
         navigate={navigate}
+        longerLastingCellsActive={longerLastingCellsActive}
+        setLongerLastingCellsActive={setLongerLastingCellsActive}
       />
       <LiveCellsDisplay liveCellsCount={liveCellsCount} />
     </>

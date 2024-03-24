@@ -11,6 +11,8 @@ const ControlPanel = ({
   gridSize,
   generateClusteredGrid,
   simulateOneStep,
+  longerLastingCellsActive, // 确保添加这一行
+  setLongerLastingCellsActive, // 以及这一行
 }) => {
   const navigate = useNavigate(); // Correct usage of useNavigate hook.
 
@@ -57,6 +59,13 @@ const ControlPanel = ({
         }}
       >
         Heatmap
+      </button>
+      <button
+        onClick={() => setLongerLastingCellsActive(!longerLastingCellsActive)}
+      >
+        {longerLastingCellsActive
+          ? "Disable Longer Lasting Cells"
+          : "Enable Longer Lasting Cells"}
       </button>
     </div>
   );
