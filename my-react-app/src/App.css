@@ -18,7 +18,14 @@ h1 {
 }
 
 .controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .controls button {
@@ -32,7 +39,15 @@ h1 {
 }
 
 .controls button:hover {
-  background-color: #4fa3d4;
+  margin: 5px;
+  padding: 10px 20px;
+  background-color: #7b8a9a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+  font-weight: bold;
 }
 
 .grid {
@@ -50,4 +65,21 @@ h1 {
 
 .cell.active {
   background-color: black;
+}
+
+.navbar a {
+  color: #f2f2f2;
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 16px;
+  border-radius: 5px;
+  background-color: #6c757d;
+  transition: background-color 0.3s, color 0.3s;
+  margin: 0 10px;
+  margin-top: 20px;
+}
+
+.navbar a:hover {
+  background-color: #5a6268;
+  color: #fff;
 }

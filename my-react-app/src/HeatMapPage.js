@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { useGameState } from "./GameStateContext"; // 导入 useGameState 钩子
+import { useGameState } from "./GameStateContext";
 
 const resolution = 10;
 const width = 800;

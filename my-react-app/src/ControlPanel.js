@@ -11,13 +11,32 @@ const ControlPanel = ({
   gridSize,
   generateClusteredGrid,
   simulateOneStep,
-  longerLastingCellsActive, // 确保添加这一行
-  setLongerLastingCellsActive, // 以及这一行
+  longerLastingCellsActive,
+  setLongerLastingCellsActive,
 }) => {
   const navigate = useNavigate(); // Correct usage of useNavigate hook.
 
   return (
     <div className="controls">
+      <button
+        onClick={() => {
+          setGrid(
+            generateEmptyGrid(gridSize.rows, gridSize.cols).map((row) =>
+              row.map(() => (Math.random() <= 0.05 ? 1 : 0))
+            )
+          );
+        }}
+      >
+        Randomize Cells
+      </button>
+      <button
+        onClick={() => {
+          setGrid(generateClusteredGrid(gridSize.rows, gridSize.cols));
+        }}
+      >
+        Clusterize Cells
+      </button>
+      <button onClick={simulateOneStep}>Next Frame</button>
       <button
         onClick={() => {
           setRunning(!running);
@@ -29,29 +48,10 @@ const ControlPanel = ({
       >
         {running ? "Stop" : "AutoPlay"}
       </button>
-      <button onClick={simulateOneStep}>Next Frame</button>
-      <button
-        onClick={() => {
-          setGrid(
-            generateEmptyGrid(gridSize.rows, gridSize.cols).map((row) =>
-              row.map(() => (Math.random() <= 0.05 ? 1 : 0))
-            )
-          );
-        }}
-      >
-        Randomize
-      </button>
-      <button
-        onClick={() => {
-          setGrid(generateClusteredGrid(gridSize.rows, gridSize.cols));
-        }}
-      >
-        Clusterize
-      </button>
       <button
         onClick={() => setGrid(generateEmptyGrid(gridSize.rows, gridSize.cols))}
       >
-        Reset
+        Reset Grid
       </button>
       <button
         onClick={() => {

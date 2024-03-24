@@ -6,16 +6,37 @@
 
 .input {
   margin: 0 10px;
+  padding: 8px 12px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .controls {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.controls button {
+  margin: 5px;
+  padding: 10px 20px;
+  background-color: #77cfe7;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .button {
-  background-color: #4caf50; /* Green */
+  background-color: #cd6fc2ac; /* Green */
   border: none;
   color: white;
   padding: 10px 15px;
@@ -24,11 +45,12 @@
   display: inline-block;
   font-size: 16px;
   margin: 0 10px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
 .button:hover {
-  background-color: #45a049;
+  background-color: #bb47ad;
 }
 
 .gridContainer {
@@ -54,7 +76,7 @@
 }
 
 .errorMessage {
-  color: red;
+  color: darkred;
   text-align: center;
   margin-top: 10px;
 }
